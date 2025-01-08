@@ -1,4 +1,4 @@
-package com.pm.patientservice.dtos.response;
+package com.pm.patientservice.dtos.patient.response;
 
 import lombok.*;
 import com.pm.patientservice.model.Patient;

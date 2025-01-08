@@ -1,17 +1,16 @@
 package com.pm.patientservice.controller;
 
-import com.pm.patientservice.dtos.response.PatientResponse;
+import com.pm.patientservice.dtos.patient.request.PatientRequest;
+import com.pm.patientservice.dtos.patient.response.PatientResponse;
 import com.pm.patientservice.dtos.wrapper.ApiResponse;
 import com.pm.patientservice.dtos.wrapper.PaginationResponse;
 import com.pm.patientservice.service.PatientService;
 import com.pm.patientservice.utils.AppConstants;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,5 +27,13 @@ public class PatientController {
         PaginationResponse<PatientResponse> response = this.patientService.findAllPatients(pageNo, pageSize);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "patients founded successfully!", response));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<PatientResponse>> createPatient(@Valid @RequestBody PatientRequest request) {
+
+        PatientResponse response = this.patientService.createPatient(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(HttpStatus.CREATED.value(), "patient created successfully!", response));
     }
 }
