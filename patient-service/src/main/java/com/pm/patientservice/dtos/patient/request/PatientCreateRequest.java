@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatientRequest {
+public class PatientCreateRequest {
 
     @NotBlank(message = "patient name can't be empty")
     @Size(max = 100, message = "patient name's length can't exceed 100 characters")
@@ -30,7 +30,7 @@ public class PatientRequest {
 
     @Override
     public String toString() {
-        return "PatientRequest{" +
+        return "PatientCreateRequest{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +

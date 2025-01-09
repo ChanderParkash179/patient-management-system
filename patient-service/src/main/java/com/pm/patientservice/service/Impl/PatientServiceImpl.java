@@ -1,9 +1,11 @@
 package com.pm.patientservice.service.Impl;
 
-import com.pm.patientservice.dtos.patient.request.PatientRequest;
+import com.pm.patientservice.dtos.patient.request.PatientCreateRequest;
+import com.pm.patientservice.dtos.patient.request.PatientUpdateRequest;
 import com.pm.patientservice.dtos.patient.response.PatientResponse;
 import com.pm.patientservice.dtos.wrapper.PaginationResponse;
 import com.pm.patientservice.exceptions.AlreadyExistsException;
+import com.pm.patientservice.exceptions.ResourceNotFoundException;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
 import com.pm.patientservice.service.PatientService;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -24,13 +27,18 @@ public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
 
     @Override
-    public PaginationResponse<PatientResponse> findAllPatients(Integer pageNo, Integer pageSize) {
+    public PaginationResponse<PatientResponse> findAllPatients(Integer pageNo, Integer pageSize, Boolean isActive) {
         log.info("finding all patients");
         log.info("request: pageNo: {}, pageSize: {}", pageNo, pageSize);
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        Page<Patient> patientPage = this.patientRepository.findAllByIsActiveTrue(pageable);
+        Page<Patient> patientPage;
+
+        if (isActive != null && isActive)
+            patientPage = this.patientRepository.findAllByIsActiveTrue(pageable);
+        else
+            patientPage = this.patientRepository.findAll(pageable);
 
         log.info("Patient fetched Successfully");
 
@@ -45,7 +53,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientResponse createPatient(PatientRequest request) {
+    public PatientResponse createPatient(PatientCreateRequest request) {
         log.info("creating new patient");
         log.info("request patient: {}", request);
 
@@ -67,5 +75,30 @@ public class PatientServiceImpl implements PatientService {
         log.info("patient created successfully");
 
         return new PatientResponse(saved);
+    }
+
+    @Override
+    public PatientResponse updatePatient(UUID id, PatientUpdateRequest request) {
+        log.info("updating old patient");
+        log.info("update request patient: {}", request);
+
+        log.info("validating old patient record");
+        Patient founded = this.patientRepository.findById(id).orElseThrow(() -> {
+            log.error("patient is not available against given id: {}", id);
+            return new ResourceNotFoundException("patient is not available against given id: " + id);
+        });
+
+        log.info("updating new patient");
+        founded.setName(request.getName());
+        founded.setEmail(request.getEmail());
+        founded.setAddress(request.getAddress());
+        founded.setIsActive(request.getIsActive());
+        founded.setDateOfBirth(LocalDate.parse(request.getDateOfBirth()));
+        founded.setRegisteredDate(LocalDate.parse(request.getRegistrationDate()));
+
+        Patient updated = this.patientRepository.save(founded);
+        log.info("patient updated successfully");
+
+        return new PatientResponse(updated);
     }
 }

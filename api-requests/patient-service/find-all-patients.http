@@ -1,1 +1,1 @@
-GET http://localhost:8000/api/v1/patients?pageNo=1&pageSize=10
+GET http://localhost:8000/api/v1/patients?pageNo=0&pageSize=50
