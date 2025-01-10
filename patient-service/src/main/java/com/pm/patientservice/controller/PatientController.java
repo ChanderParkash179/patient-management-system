@@ -41,10 +41,10 @@ public class PatientController {
                 ApiResponse.success(HttpStatus.CREATED.value(), "patient created successfully!", response));
     }
 
-    @PutMapping("{patient-id}/patient")
-    public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(@PathVariable("patient-id") UUID id, @Valid @RequestBody PatientUpdateRequest request) {
+    @PutMapping("{patient-email}/patient")
+    public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(@PathVariable("patient-email") String email, @Valid @RequestBody PatientUpdateRequest request) {
 
-        PatientResponse response = this.patientService.updatePatient(id, request);
+        PatientResponse response = this.patientService.updatePatient(email, request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "patient updated successfully!", response));
     }

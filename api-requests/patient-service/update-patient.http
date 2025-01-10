@@ -1,9 +1,9 @@
-PUT localhost:8000/api/v1/patients/78a9432d-b31e-4d72-bc58-ce5ccb9cff23/patient
+PUT localhost:8000/api/v1/patients/john.doe@gmail.com/patient
 Content-type: application/json; charset=utf-8
 
 {
   "name": "John Doe",
-  "email": "john.doe@gmail.com",
+  "email": "johndoe@gmail.com",
   "address": "123 Main St",
   "dateOfBirth": "1990-01-01",
   "isActive" : true,

@@ -14,5 +14,5 @@ public interface PatientService {
 
     PatientResponse createPatient(PatientCreateRequest request);
 
-    PatientResponse updatePatient(UUID id, @Valid PatientUpdateRequest request);
+    PatientResponse updatePatient(String email, @Valid PatientUpdateRequest request);
 }

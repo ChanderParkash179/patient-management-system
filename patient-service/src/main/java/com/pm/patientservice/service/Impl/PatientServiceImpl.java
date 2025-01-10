@@ -57,9 +57,12 @@ public class PatientServiceImpl implements PatientService {
         log.info("creating new patient");
         log.info("request patient: {}", request);
 
-        log.info("validating request patient record");
-        if (this.patientRepository.findPatientByEmail(request.getEmail()).isPresent())
-            throw new AlreadyExistsException("patient is already available against given email: " + request.getEmail());
+        log.info("request email validation on creation");
+        if (this.alreadyAvailableEmail(request.getEmail())) {
+            log.info("patient already exists against given email: {}", request.getEmail());
+            throw new AlreadyExistsException("patient already exists against given email: " + request.getEmail());
+        }
+        log.info("requested email validation successful on creation");
 
         log.info("creating new patient");
         Patient patient = Patient.builder()
@@ -78,14 +81,21 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientResponse updatePatient(UUID id, PatientUpdateRequest request) {
+    public PatientResponse updatePatient(String email, PatientUpdateRequest request) {
         log.info("updating old patient");
         log.info("update request patient: {}", request);
 
+        log.info("request email validation");
+        if (this.alreadyAvailableEmail(request.getEmail())) {
+            log.info("requested patient already exists against given email: {}", request.getEmail());
+            throw new AlreadyExistsException("requested patient already exists against given email: " + request.getEmail());
+        }
+        log.info("requested email validation successful");
+
         log.info("validating old patient record");
-        Patient founded = this.patientRepository.findById(id).orElseThrow(() -> {
-            log.error("patient is not available against given id: {}", id);
-            return new ResourceNotFoundException("patient is not available against given id: " + id);
+        Patient founded = this.patientRepository.findPatientByEmail(email).orElseThrow(() -> {
+            log.error("patient is not available against given email: {}", email);
+            return new ResourceNotFoundException("patient is not available against given email: " + email);
         });
 
         log.info("updating new patient");
@@ -100,5 +110,9 @@ public class PatientServiceImpl implements PatientService {
         log.info("patient updated successfully");
 
         return new PatientResponse(updated);
+    }
+
+    private Boolean alreadyAvailableEmail(String email) {
+        return this.patientRepository.findPatientByEmail(email).isPresent();
     }
 }
