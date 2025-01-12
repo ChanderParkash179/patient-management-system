@@ -15,4 +15,8 @@ public interface PatientService {
     PatientResponse createPatient(PatientCreateRequest request);
 
     PatientResponse updatePatient(String email, @Valid PatientUpdateRequest request);
+
+    void deletePatient(String email);
+
+    PatientResponse findPatientByEmail(String email);
 }

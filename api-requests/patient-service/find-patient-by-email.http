@@ -1,0 +1,1 @@
+GET localhost:8000/api/v1/patients/isabella.walker@example.com/patient

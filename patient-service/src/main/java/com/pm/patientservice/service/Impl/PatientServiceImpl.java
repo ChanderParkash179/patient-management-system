@@ -92,11 +92,7 @@ public class PatientServiceImpl implements PatientService {
         }
         log.info("requested email validation successful");
 
-        log.info("validating old patient record");
-        Patient founded = this.patientRepository.findPatientByEmail(email).orElseThrow(() -> {
-            log.error("patient is not available against given email: {}", email);
-            return new ResourceNotFoundException("patient is not available against given email: " + email);
-        });
+        Patient founded = this.getPatientByEmail(email);
 
         log.info("updating new patient");
         founded.setName(request.getName());
@@ -112,7 +108,37 @@ public class PatientServiceImpl implements PatientService {
         return new PatientResponse(updated);
     }
 
+    @Override
+    public void deletePatient(String email) {
+        log.info("delete patient");
+        log.info("request: delete patient by email: {}", email);
+
+        Patient patient = this.getPatientByEmail(email);
+
+        log.info("deleting patient");
+        this.patientRepository.delete(patient);
+        log.info("patient deleted successfully");
+    }
+
+    @Override
+    public PatientResponse findPatientByEmail(String email) {
+        log.info("finding patient by email");
+        log.info("request - email: {}", email);
+
+        return new PatientResponse(this.getPatientByEmail(email));
+    }
+
     private Boolean alreadyAvailableEmail(String email) {
         return this.patientRepository.findPatientByEmail(email).isPresent();
+    }
+
+    private Patient getPatientByEmail(String email) {
+        log.info("validating requested email patient");
+        Patient patient = this.patientRepository.findPatientByEmail(email).orElseThrow(() -> {
+            log.error("patient is not available against requested email: {}", email);
+            return new ResourceNotFoundException("patient is not available against requested email: " + email);
+        });
+        log.info("patient founded successfully");
+        return patient;
     }
 }

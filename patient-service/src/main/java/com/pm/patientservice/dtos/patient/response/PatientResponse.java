@@ -19,6 +19,7 @@ public class PatientResponse {
     private Boolean isActive;
     private String address;
     private LocalDate dateOfBirth;
+    private LocalDate registrationDate;
 
     public PatientResponse(Patient patient) {
         this.id = patient.getId();
@@ -27,5 +28,6 @@ public class PatientResponse {
         this.isActive = patient.getIsActive();
         this.address = patient.getAddress();
         this.dateOfBirth = patient.getDateOfBirth();
+        this.registrationDate = patient.getRegisteredDate();
     }
 }

@@ -41,11 +41,27 @@ public class PatientController {
                 ApiResponse.success(HttpStatus.CREATED.value(), "patient created successfully!", response));
     }
 
+    @GetMapping("{patient-email}/patient")
+    public ResponseEntity<ApiResponse<PatientResponse>> findPatientByEmail(@PathVariable("patient-email") String email) {
+
+        PatientResponse response = this.patientService.findPatientByEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(HttpStatus.OK.value(), "patient founded successfully!", response));
+    }
+
     @PutMapping("{patient-email}/patient")
     public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(@PathVariable("patient-email") String email, @Valid @RequestBody PatientUpdateRequest request) {
 
         PatientResponse response = this.patientService.updatePatient(email, request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "patient updated successfully!", response));
+    }
+
+    @DeleteMapping("{patient-email}/patient")
+    public ResponseEntity<ApiResponse<Void>> deletePatient(@PathVariable("patient-email") String email) {
+
+        this.patientService.deletePatient(email);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(HttpStatus.OK.value(), "patient deleted successfully against given email: " + email));
     }
 }
