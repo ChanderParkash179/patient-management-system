@@ -6,8 +6,6 @@ import com.pm.patientservice.dtos.patient.response.PatientResponse;
 import com.pm.patientservice.dtos.wrapper.PaginationResponse;
 import jakarta.validation.Valid;
 
-import java.util.UUID;
-
 public interface PatientService {
 
     PaginationResponse<PatientResponse> findAllPatients(Integer pageNo, Integer pageSize, Boolean isActive);
