@@ -1,11 +1,13 @@
 package com.pm.patientservice.service.Impl;
 
+import com.pm.patientservice.dtos.billing.PatientBillingRequest;
 import com.pm.patientservice.dtos.patient.request.PatientCreateRequest;
 import com.pm.patientservice.dtos.patient.request.PatientUpdateRequest;
 import com.pm.patientservice.dtos.patient.response.PatientResponse;
 import com.pm.patientservice.dtos.wrapper.PaginationResponse;
 import com.pm.patientservice.exceptions.AlreadyExistsException;
 import com.pm.patientservice.exceptions.ResourceNotFoundException;
+import com.pm.patientservice.grpc.BillingServiceGrpcClient;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
 import com.pm.patientservice.service.PatientService;
@@ -24,6 +26,8 @@ import java.time.LocalDate;
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
+
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
     @Override
     public PaginationResponse<PatientResponse> findAllPatients(Integer pageNo, Integer pageSize, Boolean isActive) {
@@ -75,6 +79,10 @@ public class PatientServiceImpl implements PatientService {
 
         Patient saved = this.patientRepository.save(patient);
         log.info("patient created successfully");
+
+        log.info("creating billing for newly added patient");
+        this.billingServiceGrpcClient.createBillingAccount(new PatientBillingRequest(saved));
+        log.info("successfully billing service called for newly added patient");
 
         return new PatientResponse(saved);
     }

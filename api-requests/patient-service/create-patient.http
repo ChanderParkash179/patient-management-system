@@ -2,8 +2,8 @@ POST localhost:8000/api/v1/patients
 Content-type: application/json; charset=utf-8
 
 {
-  "name": "John Doe",
-  "email": "john.doe@gmail.com",
+  "name": "John Doe WB",
+  "email": "johndoe_WB@gmail.com",
   "address": "123 Main St",
   "dateOfBirth": "1990-01-01",
   "registrationDate": "1990-01-01"
