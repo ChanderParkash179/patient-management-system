@@ -8,6 +8,7 @@ import com.pm.patientservice.dtos.wrapper.PaginationResponse;
 import com.pm.patientservice.exceptions.AlreadyExistsException;
 import com.pm.patientservice.exceptions.ResourceNotFoundException;
 import com.pm.patientservice.grpc.BillingServiceGrpcClient;
+import com.pm.patientservice.kafka.KafkaProducer;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
 import com.pm.patientservice.service.PatientService;
@@ -24,6 +25,8 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
+
+    private final KafkaProducer kafkaProducer;
 
     private final PatientRepository patientRepository;
 
@@ -83,6 +86,10 @@ public class PatientServiceImpl implements PatientService {
         log.info("creating billing for newly added patient");
         this.billingServiceGrpcClient.createBillingAccount(new PatientBillingRequest(saved));
         log.info("successfully billing service called for newly added patient");
+
+        log.info("sending newly created patient to topic");
+        this.kafkaProducer.sendEvent(saved);
+        log.info("successfully sent newly created patient to topic");
 
         return new PatientResponse(saved);
     }
