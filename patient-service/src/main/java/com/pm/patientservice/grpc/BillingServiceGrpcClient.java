@@ -17,7 +17,7 @@ public class BillingServiceGrpcClient {
     private final BillingServiceGrpc.BillingServiceBlockingStub blockingStub;
 
     public BillingServiceGrpcClient(
-            @Value("${billing.service.address:localhost}") String address,
+            @Value("${billing.service.address:billing-service}") String address,
             @Value("${billing.service.grpc.port:9001}") Integer port) {
 
         log.info("Initializing gRPC client for billing service at {}:{}", address, port);

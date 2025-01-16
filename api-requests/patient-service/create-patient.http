@@ -3,7 +3,7 @@ Content-type: application/json; charset=utf-8
 
 {
   "name": "John Doe Kafka",
-  "email": "johndoe_kafka_1@gmail.com",
+  "email": "johndoe_kafka_3@gmail.com",
   "address": "123 Main St",
   "dateOfBirth": "1990-01-01",
   "registrationDate": "1990-01-01"
