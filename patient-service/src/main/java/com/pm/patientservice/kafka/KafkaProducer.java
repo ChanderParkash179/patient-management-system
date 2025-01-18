@@ -1,7 +1,6 @@
 package com.pm.patientservice.kafka;
 
 import com.pm.patientservice.enums.EventType;
-import com.pm.patientservice.enums.KafkaTopics;
 import com.pm.patientservice.model.Patient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ public class KafkaProducer {
                 .build();
 
         try {
-            this.kafkaTemplate.send(KafkaTopics.PATIENT.getTopic(), event.toByteArray());
+            this.kafkaTemplate.send("patient", event.toByteArray());
         } catch (Exception e) {
             log.error("error sending PatientCreated event: {}", event);
         }
