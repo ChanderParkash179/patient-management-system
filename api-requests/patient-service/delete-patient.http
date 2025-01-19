@@ -1,1 +1,1 @@
-DELETE localhost:8000/api/v1/patients/john.doe@gmail.com/patient
+DELETE localhost:8003/api/v1/patients/john.doe@gmail.com/patient

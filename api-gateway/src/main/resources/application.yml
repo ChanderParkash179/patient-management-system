@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        # Route for /api/v1/patients/** for patient-service
+        - id : patient-service-route
+          uri : http://patient-service:8000
+          predicates:
+            - Path=/api/v1/patients/**
+          filters:
+            - StripPrefix=0
+
+        # Route for /api/docs/patients to patient-service /v3/api-docs
+        - id: api-docs-patient-route
+          uri: http://patient-service:8000
+          predicates:
+            - Path=/api-docs/patients
+          filters:
+            - RewritePath=/api-docs/patients, /v3/api-docs
+
+server:
+  port: 8003
