@@ -13,6 +13,14 @@ spring:
           filters:
             - StripPrefix=0
 
+        # Route for /api/v1/auth/** for auth-service
+        - id : auth-service-route
+          uri : http://auth-service:8004
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=0
+
         # Route for /api/docs/patients to patient-service /v3/api-docs
         - id: api-docs-patient-route
           uri: http://patient-service:8000

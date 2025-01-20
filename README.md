@@ -1,6 +1,7 @@
 # Patient Management System
 
 ## Services
+* Auth Service
 * Patient Service
 * Billing Service
 * Analytics Service
