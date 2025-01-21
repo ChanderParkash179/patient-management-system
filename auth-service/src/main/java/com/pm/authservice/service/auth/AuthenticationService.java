@@ -6,4 +6,6 @@ import com.pm.authservice.dtos.response.AuthenticationResponse;
 public interface AuthenticationService {
 
     AuthenticationResponse authenticate(AuthenticationRequest request);
+
+    Boolean validate(String authHeader);
 }

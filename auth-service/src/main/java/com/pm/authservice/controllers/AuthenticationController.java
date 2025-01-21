@@ -9,13 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -28,5 +25,14 @@ public class AuthenticationController {
         AuthenticationResponse response = this.authenticationService.authenticate(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "user authenticated successfully!", response));
+    }
+
+    @GetMapping("/validate")
+    @Operation(summary = "validate token")
+    public ResponseEntity<ApiResponse<Boolean>> validate(@RequestHeader("Authorization") String authHeader) {
+        Boolean response = this.authenticationService.validate(authHeader);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(HttpStatus.OK.value(), "token authenticated successfully!", response));
     }
 }

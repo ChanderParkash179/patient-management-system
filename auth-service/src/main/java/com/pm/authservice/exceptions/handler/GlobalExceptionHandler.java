@@ -2,10 +2,7 @@ package com.pm.authservice.exceptions.handler;
 
 import com.pm.authservice.dtos.wrapper.ErrorResponse;
 import com.pm.authservice.enums.Message;
-import com.pm.authservice.exceptions.AccountNonActiveException;
-import com.pm.authservice.exceptions.AlreadyExistsException;
-import com.pm.authservice.exceptions.BadRequestException;
-import com.pm.authservice.exceptions.ResourceNotFoundException;
+import com.pm.authservice.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -106,4 +103,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
                 ErrorResponse.error(INTERNAL_SERVER_ERROR.value(), Message.INTERNAL_SERVER_ERROR.getMessage()));
     }
+
+
+    @ResponseStatus(UNAUTHORIZED)
+    @ExceptionHandler(TokenMissingException.class)
+    public ResponseEntity<ErrorResponse> handleTokenMissingException(TokenMissingException ex) {
+
+        log.info("Nonce Token Missing Error: {}", ex.getMessage());
+        return ResponseEntity.status(UNAUTHORIZED)
+                .body(ErrorResponse.error(UNAUTHORIZED.value(), Message.NOT_AUTHORIZED.getMessage()));
+    }
+
+
+    @ResponseStatus(UNAUTHORIZED)
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleTokenExpiredException(TokenExpiredException ex) {
+
+        log.info("Token Expired Error: {}", ex.getMessage());
+        return ResponseEntity.status(UNAUTHORIZED)
+                .body(ErrorResponse.error(UNAUTHORIZED.value(), Message.SESSION_EXPIRED.getMessage()));
+    }
+
 }

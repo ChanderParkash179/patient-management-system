@@ -3,6 +3,7 @@ package com.pm.authservice.service.auth.Impl;
 import com.pm.authservice.dtos.request.AuthenticationRequest;
 import com.pm.authservice.dtos.response.AuthenticationResponse;
 import com.pm.authservice.entities.User;
+import com.pm.authservice.exceptions.TokenMissingException;
 import com.pm.authservice.security.jwt.JwtService;
 import com.pm.authservice.service.auth.AuthenticationService;
 import com.pm.authservice.service.user.UserService;
@@ -39,5 +40,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
+    }
+
+    @Override
+    public Boolean validate(String authHeader) {
+        log.info("validating token");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.error("invalid or empty token");
+            throw new TokenMissingException("invalid or empty token");
+        }
+
+        log.info("validating header token");
+        return this.jwtService.validateToken(authHeader.substring(7));
     }
 }
