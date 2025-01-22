@@ -1,4 +1,3 @@
-
 base-path: /api/v1
 spring:
   application:
@@ -7,21 +6,31 @@ spring:
   cloud:
     gateway:
       routes:
-        # Route for /api/v1/patients/** for patient-service
-        - id : patient-service-route
-          uri : http://patient-service:8000
-          predicates:
-            - Path=${base-path}/patients/**
-          filters:
-            - StripPrefix=2
 
         # Route for /api/v1/auth/** for auth-service
-        - id : auth-service-route
-          uri : http://auth-service:8004
+        - id: auth-service-route
+          uri: http://auth-service:8004
           predicates:
             - Path=${base-path}/auth/**
           filters:
             - StripPrefix=2
+
+        # Route for /api/docs/auth to auth-service /v3/api-docs
+        - id: api-docs-auth-route
+          uri: http://auth-service:8004
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - RewritePath=/api-docs/auth, /v3/api-docs
+
+        # Route for /api/v1/patients/** for patient-service
+        - id: patient-service-route
+          uri: http://patient-service:8000
+          predicates:
+            - Path=${base-path}/patients/**
+          filters:
+            - StripPrefix=2
+            - JwtValidation
 
         # Route for /api/docs/patients to patient-service /v3/api-docs
         - id: api-docs-patient-route

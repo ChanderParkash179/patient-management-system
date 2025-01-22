@@ -1,1 +1,2 @@
 GET http://localhost:8003/api/v1/patients?pageNo=0&pageSize=10
+Authorization: Bearer {{token}}
