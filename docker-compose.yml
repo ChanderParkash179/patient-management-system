@@ -1,0 +1,129 @@
+services:
+  auth-service-db:
+    image: postgres:latest
+    container_name: auth-service-db
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_DB: auth_service
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: root
+    volumes:
+      - /var/lib/postgresql/data
+    networks:
+      - internal
+
+  patient-service-db:
+    image: postgres:latest
+    container_name: patient-service-db
+    ports:
+      - "5001:5432"
+    environment:
+      POSTGRES_DB: patient_service
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: root
+    volumes:
+      - /var/lib/postgresql/data
+    networks:
+      - internal
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8001
+    networks:
+      - internal
+
+  auth-service:
+    build:
+      context: ./auth-service
+    image: auth-service:latest
+    container_name: auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_TOKEN_EXPIRATION: 259200000
+      JWT_SECRET_KEY: 95b131561038672bed40fae733e3c7f9c5776977a8ffafb25625c61e4e709455
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/auth_service
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+    networks:
+      - internal
+
+  patient-service:
+    build:
+      context: ./patient-service
+    image: patient-service:latest
+    container_name: patient-service
+    ports:
+      - "8002:8002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/patient_service
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+  billing-service:
+    build:
+      context: ./billing-service
+    image: billing-service:latest
+    container_name: billing-service
+    ports:
+      - "8003:8003"
+      - "9001:9001"
+    networks:
+      - internal
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+    image: analytics-service:latest
+    container_name: analytics-service
+    ports:
+      - "8004:8004"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    environment:
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  kafka_data:
